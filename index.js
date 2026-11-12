@@ -84,7 +84,7 @@ function resetIdleTimer() {
     console.debug('Resetting idle timer');
     if (idleTimer) clearTimeout(idleTimer);
     let context = getContext();
-    if (!context.characterId && !context.groupID) return;
+    if (!context.characterId && !context.groupId) return;
     if (!extension_settings.idle.enabled) return;
     if (extension_settings.idle.randomTime) {
         // ensure these are ints
@@ -167,16 +167,17 @@ function sendPrompt(prompt) {
     } else if (extension_settings.idle.useImpersonation) {
         $('#option_impersonate').trigger('click');
         console.debug('Sending idle impersonation');
-    } else if (extension_settings.idle.useSwipe) {
+        } else if (extension_settings.idle.useSwipe) {
         $('.last_mes .swipe_right').click();
         console.debug('Sending idle swipe');
     } else {
         console.debug('Sending idle prompt');
-        console.log(extension_settings.idle);
-        if (extension_settings.idle.includePrompt) {
+        const ctx = getContext();
+        if (ctx.groupId) {
+            ctx.executeSlashCommandsWithOptions('/trigger');
+        } else if (extension_settings.idle.includePrompt) {
             sendLoud(extension_settings.idle.sendAs, prompt);
-        }
-        else {
+        } else {
             promptQuietForLoudResponse(extension_settings.idle.sendAs, prompt);
         }
     }
